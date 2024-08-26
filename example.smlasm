@@ -1,0 +1,37 @@
+; This program represents the accumulation of the sum where each term in the series;
+; is the adder X plus the current value of the counter k, running from 0 to n.
+
+; X is stored in 0x50
+; n is stored in 0x51
+; result will be saved in 0x52
+
+; R1 : Adder (loaded from address 0x50)
+; R2 : Counter
+; R3 : Sum
+; R4 : Temporary storage for intermediate results
+; R0 : Limit (n) (loaded from address 0x51)
+; R5 : Constant value 1
+
+; Initialization
+0x00: load R0, [0x51] ; Load n (the limit) from memory address 0x51
+0x02: load R1, [0x50] ; Load adder value from memory address 0x50
+0x04: loadi R2, 0x00 ; Initialize counter (R2) to 0
+0x06: loadi R3, 0x00 ; Initialize sum (R3) to 0
+0x08: loadi R5, 0x01 ; Initialize constant value 1 (R5) to 1
+
+; Increment n by 1
+0x0A: add R0, R0, R5 ; Increment n (R0) by 1
+
+; Main loop
+0x0C: add R4, R3, R1 ; Add Sum (R3) to Adder (R1) and store in temporary buffer (R4)
+0x0E: add R3, R4, R2 ; Add Counter (R2) to (Sum + Adder) and store result in Sum (R3)
+0x10: add R2, R5, R2 ; Increment Counter (R2) by 1
+
+; Loop control
+jump R2, [0x30] ; If Counter (R2) is non-zero, jump to address 0x30 (end of loop)
+jump R0, [0x0C] ; If n (R0) is non-zero, jump to address 0x0C (continue loop)
+
+; End of program
+0x30: store R3, [0x52] ; Store the final result (Sum in R3) at memory address 0x52
+0x32: halt ; Terminate the program
+
